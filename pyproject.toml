@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fngen"
+version = "0.1.0"
+description = "Give your Python functions superpowers"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+keywords = ["infra", "infrastructure", "deployment"]
+authors = [{ name = "Connor McLaughlin", email = "connor@supadef.com" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = []
+
+# [project.urls]
+# "Homepage" = "https://github.com/connormcl/fngen"
+# "Bug Tracker" = "https://github.com/connormcl/fngen/issues"
+
+[tool.setuptools]
+packages = ["fngen"]
