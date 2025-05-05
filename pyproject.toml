@@ -17,7 +17,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = ["typer>=0.9.0"]
+dependencies = ["typer>=0.9.0", "rich>=13.0.0", "art>=6.4"]
 
 [project.scripts]
 fngen = "fngen.cli:app"
