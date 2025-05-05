@@ -59,6 +59,16 @@ def connect():
     pass
 
 
+@app.command(name="push", help="Push a deployment package. See docs.md for example package structure.")
+def push():
+    pass
+
+
+@app.command(name="set_env", help="Securely set a .env file for your project")
+def set_env(project_name: str, path_to_env_file: str):
+    pass
+
+
 @app.command(name="version", help="Prints the package version.")
 def version():
     """
