@@ -43,7 +43,6 @@ def main(
     ctx: typer.Context,
     help: bool = help_option
 ):
-    """Root command callback."""
     if ctx.invoked_subcommand is None:
         print_custom_help(ctx)
         raise typer.Exit()
@@ -55,7 +54,9 @@ def connect(help: bool = help_option):
 
 
 @app.command(name="push", help="Push a deployment package. See docs.md for example structure.")
-def push(help: bool = help_option):
+def push(project_name: str,
+         path_to_package: str,
+         help: bool = help_option):
     pass
 
 
