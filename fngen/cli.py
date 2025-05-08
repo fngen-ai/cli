@@ -80,7 +80,7 @@ def set_env(
 
 
 @app.command(name="version", help="Prints the package version.")
-def version(help: bool = help_option):
+def _version(help: bool = help_option):
     """Prints the package version."""
     try:
         try:
