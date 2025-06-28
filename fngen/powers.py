@@ -14,3 +14,13 @@ def webapp(framework='fastapi', compute='server'):
         # intentionally do nothing :)
         return f
     return g
+
+
+def task_worker(compute='server'):
+    """
+    Coming soon
+    """
+    def g(f):
+        # intentionally do nothing :)
+        return f
+    return g

@@ -1,3 +1,4 @@
+import time
 import typer
 from rich.console import Console
 from rich import print as rprint
@@ -6,38 +7,12 @@ from art import text2art
 import typer.models
 from importlib.metadata import version, PackageNotFoundError
 
+from fngen.read_api_key import NoAPIKeyError, get_api_key
+from fngen.cli_util import help_option, print_custom_help
+
+from fngen.commands.login import login
+
 app = typer.Typer(add_help_option=False, add_completion=False)
-console = Console()
-
-
-def print_custom_help(ctx: typer.Context):
-    try:
-        art_text = text2art('fngen', font='Rammstein')
-        rprint(f"[bold blue]{art_text}[/bold blue]")
-    except Exception:
-        rprint("[bold blue]fngen[/bold blue]")
-
-    console.print(ctx.get_help())
-
-
-def show_help_callback(ctx: typer.Context, param: typer.models.OptionInfo, value: bool):
-    if not value or ctx.resilient_parsing:
-        return
-
-    print_custom_help(ctx)
-    raise typer.Exit()
-
-
-help_option = typer.Option(
-    None,
-    "--help",
-    "-h",
-    help="Show this message and exit.",
-    is_eager=True,
-    expose_value=False,
-    callback=show_help_callback,
-    show_default=False
-)
 
 
 @app.callback(invoke_without_command=True)
@@ -48,6 +23,9 @@ def main(
     if ctx.invoked_subcommand is None:
         print_custom_help(ctx)
         raise typer.Exit()
+
+
+app.command(name="login", help="Log in + set up your API key")(login)
 
 
 @app.command(name="connect", help="Connect via FNGEN_API_KEY or ~/.fngen/credentials")
