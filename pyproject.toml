@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fngen"
-version = "0.5.0"
+version = "0.7.0"
 description = "Give your Python functions superpowers"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -32,5 +32,5 @@ fngen = "fngen.cli:app"
 # "Homepage" = "https://github.com/connormcl/fngen"
 # "Bug Tracker" = "https://github.com/connormcl/fngen/issues"
 
-[tool.setuptools]
-packages = ["fngen"]
+[tool.setuptools.packages.find]
+where = ["."]
