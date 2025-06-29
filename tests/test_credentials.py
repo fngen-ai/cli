@@ -1,4 +1,4 @@
-from fngen.read_api_key import get_api_key
+from fngen.api_key_manager import get_api_key
 
 
 def test_parse_credentials():

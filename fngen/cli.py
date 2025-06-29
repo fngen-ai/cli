@@ -7,7 +7,7 @@ from art import text2art
 import typer.models
 from importlib.metadata import version, PackageNotFoundError
 
-from fngen.read_api_key import NoAPIKeyError, get_api_key
+from fngen.api_key_manager import NoAPIKeyError, get_api_key
 from fngen.cli_util import help_option, print_custom_help
 
 from fngen.commands.login import login

@@ -35,3 +35,7 @@ help_option = typer.Option(
     callback=show_help_callback,
     show_default=False
 )
+
+
+def print_error(message: str):
+    console.print(f"[bold red]ERR:[/] {str(message)}")
