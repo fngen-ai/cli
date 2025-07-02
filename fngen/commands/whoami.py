@@ -1,8 +1,20 @@
-from fngen.cli_util import help_option, rprint
+from fngen.cli_util import help_option, print_error, rprint, console
 
-# @app.command(name="connect", help="Connect via FNGEN_API_KEY or ~/.fngen/credentials")
+from fngen.api_key_manager import NoAPIKeyError, get_api_key
+
+from fngen.network import GET
 
 
 def whoami(help: bool = help_option):
-    """Placeholder for the whoami command."""
-    rprint("[yellow]Running 'whoami' command (placeholder)...[/yellow]")
+    try:
+        try:
+            api_key = get_api_key()
+
+            res = GET('/cli/connect')
+            console.print(f"{res}")
+        except NoAPIKeyError:
+            console.print(
+                "No API key found. Please run `fngen login` to set up your API key.")
+    except Exception as e:
+        print_error(e)
+        # raise e

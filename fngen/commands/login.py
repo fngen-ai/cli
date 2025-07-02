@@ -53,4 +53,4 @@ def login(regenerate: Annotated[
                 save_api_key(res['secret_key'], profile='default')
     except Exception as e:
         print_error(e)
-        raise e
+        # raise e
