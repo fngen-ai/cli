@@ -8,6 +8,8 @@ import typer.models
 
 from fngen.cli_util import help_option, print_custom_help
 
+from fngen.network import GET, POST
+
 
 project_app = typer.Typer(name="project", help="Manage projects (list / create / delete / set_env)",
                           add_help_option=False, add_completion=False)
@@ -26,8 +28,8 @@ def project_main(
 @project_app.command(name="list", help="List existing projects")
 def list_projects(help: bool = help_option):
     """Lists projects associated with the current user/account."""
-    rprint("[yellow]Running 'project list' command (placeholder)...[/yellow]")
-    rprint("  Listing projects...")
+    res = GET('/api/projects')
+    print(res)
 
 
 @project_app.command(name="create", help="Create a new project")
@@ -37,8 +39,12 @@ def create_project(
     help: bool = help_option
 ):
     """Creates a new project with the given name."""
-    rprint(f"[green]Running 'project create' command (placeholder)...[/green]")
-    rprint(f"  Creating project: [bold]{project_name}[/bold]")
+    res = POST('/api/project', {
+        'name': project_name
+    })
+    print(res)
+    # rprint(f"[green]Running 'project create' command (placeholder)...[/green]")
+    # rprint(f"  Creating project: [bold]{project_name}[/bold]")
 
 
 @project_app.command(name="delete", help="Delete an existing project")
