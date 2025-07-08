@@ -37,12 +37,13 @@ def list_projects(help: bool = help_option, profile: str = profile_option):
 def create_project(
     project_name: str = typer.Argument(...,
                                        help="The name of the new project."),
-    help: bool = help_option
+    help: bool = help_option,
+    profile: str = profile_option
 ):
     """Creates a new project with the given name."""
     res = POST('/api/project', {
         'name': project_name
-    })
+    }, profile=profile)
     print(res)
     # rprint(f"[green]Running 'project create' command (placeholder)...[/green]")
     # rprint(f"  Creating project: [bold]{project_name}[/bold]")
@@ -52,7 +53,8 @@ def create_project(
 def delete_project(
     project_name: str = typer.Argument(...,
                                        help="The name of the project to delete."),
-    help: bool = help_option
+    help: bool = help_option,
+    profile: str = profile_option
 ):
     """Deletes the specified project."""
     rprint(f"[red]Running 'project delete' command (placeholder)...[/red]")
@@ -63,7 +65,8 @@ def delete_project(
 def set_env(
     project_name: str = typer.Argument(..., help="The name of the project"),
     path_to_env_file: str = typer.Argument(..., help="Path to the .env file"),
-    help: bool = help_option
+    help: bool = help_option,
+    profile: str = profile_option
 ):
     """Placeholder for the set_env command."""
     rprint(f"[yellow]Running 'set_env' command (placeholder)...[/yellow]")
