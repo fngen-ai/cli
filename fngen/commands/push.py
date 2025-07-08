@@ -25,13 +25,24 @@ def push(project_name: str, source_root_path: str, help: bool = help_option, pro
                            'archive_type': 'zip'
                        }, profile=profile)
 
-            url = res['url']
-            fields = res['fields']
+            console.print(f"{res}")
+
+            url = res['presigned_url']
+            fields = res['presigned_fields']
+            package_id = res['package_id']
+
+            print(f'package_id: {package_id}')
 
             archive_path = packaging.package_source(
                 source_root_path, archive_format='zip')
 
+            print(f'archive_path: {archive_path}')
+
             __upload_file_with_redirect_handling(url, fields, archive_path)
+
+            res = POST('/api/project/deploy_package', {
+                'package_id': package_id
+            }, profile=profile)
 
             console.print(f"{res}")
         except NoAPIKeyError:
