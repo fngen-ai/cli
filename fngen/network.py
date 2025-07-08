@@ -7,8 +7,8 @@ SERVICE_ENDPOINT = 'https://fngen.ai'
 TIMEOUT_SECONDS = 3 * 60
 
 
-def get_auth_headers():
-    api_key = get_api_key()
+def get_auth_headers(profile):
+    api_key = get_api_key(profile=profile)
 
     headers = {
         "Authorization": f"{api_key}",
@@ -17,10 +17,10 @@ def get_auth_headers():
     return headers
 
 
-def GET(route: str, params: dict = None, send_api_key=True) -> dict:
+def GET(route: str, params: dict = None, send_api_key=True, profile=None) -> dict:
     headers = {}
     if send_api_key:
-        headers = get_auth_headers()
+        headers = get_auth_headers(profile=profile)
     response = requests.get(f'{SERVICE_ENDPOINT}{route}',
                             headers=headers,
                             timeout=TIMEOUT_SECONDS,
@@ -32,10 +32,10 @@ def GET(route: str, params: dict = None, send_api_key=True) -> dict:
     return json
 
 
-def POST(route: str, body: dict, send_api_key=True) -> dict:
+def POST(route: str, body: dict, send_api_key=True, profile=None) -> dict:
     headers = {}
     if send_api_key:
-        headers = get_auth_headers()
+        headers = get_auth_headers(profile=profile)
     response = requests.post(f'{SERVICE_ENDPOINT}{route}',
                              headers=headers,
                              timeout=TIMEOUT_SECONDS,

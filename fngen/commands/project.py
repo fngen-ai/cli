@@ -7,6 +7,7 @@ from art import text2art
 import typer.models
 
 from fngen.cli_util import help_option, print_custom_help
+from fngen.cli_util import profile_option
 
 from fngen.network import GET, POST
 
@@ -26,9 +27,9 @@ def project_main(
 
 
 @project_app.command(name="list", help="List existing projects")
-def list_projects(help: bool = help_option):
+def list_projects(help: bool = help_option, profile: str = profile_option):
     """Lists projects associated with the current user/account."""
-    res = GET('/api/projects')
+    res = GET('/api/projects', profile=profile)
     print(res)
 
 

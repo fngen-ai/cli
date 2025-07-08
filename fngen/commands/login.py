@@ -8,6 +8,8 @@ import typer
 
 from fngen.network import GET, POST
 
+from fngen.cli_util import profile_option
+
 
 def get_login_input():
     email = typer.prompt("Enter your email")
@@ -20,37 +22,45 @@ def login(regenerate: Annotated[
         typer.Option(
             "--regenerate", help="Generate a new API key, invalidating any existing one.")
     ] = False,
-        help: bool = help_option):
+        help: bool = help_option,
+        profile: str = profile_option):
     """
     Log in to FNGEN and configure your local API key.
 
     This command will guide you through setting up the credentials needed
     to interact with the FNGEN platform via the CLI.
     """
-    try:
-        if regenerate:
+    # print(f'log in: --profile={profile}')
+
+    def prompt_login_flow(route):
+        try:
             email, password = get_login_input()
-            res = POST('/cli/login_regen_key', {
+            res = POST(route, {
                 'email': email,
                 'password': password
-            }, send_api_key=False)
+            }, send_api_key=False, profile=profile)
             console.print(f"{res}")
-            save_api_key(res['secret_key'], profile='default')
-        else:
-            try:
-                api_key = get_api_key()
+            save_api_key(res['secret_key'], profile=profile)
+        except Exception as e:
+            print_error(e)
 
-                res = GET('/cli/connect')
-                console.print(f"{res}")
-            except NoAPIKeyError:
-                email, password = get_login_input()
+    # --regenerate = delete old api key, create + install new one
+    if regenerate:
+        # always do the hard regen with
+        prompt_login_flow('/cli/login_regen_key')
+        return
 
-                res = POST('/cli/login', {
-                    'email': email,
-                    'password': password
-                }, send_api_key=False)
-                console.print(f"{res}")
-                save_api_key(res['secret_key'], profile='default')
-    except Exception as e:
-        print_error(e)
-        # raise e
+    try:
+        api_key = get_api_key(profile=profile)
+
+        # api key already saved = confirm overwrite
+        confirm = typer.confirm(
+            f"You've already saved an api key for profile `{profile}`. Would you like to overwrite?")
+        if not confirm:
+            typer.echo("Aborted.")
+            raise typer.Abort()
+        # do the regen flow
+        prompt_login_flow('/cli/login_regen_key')
+    except NoAPIKeyError:
+        # no api key saved for this profile = normal login
+        prompt_login_flow('/cli/login')

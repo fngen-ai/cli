@@ -36,6 +36,17 @@ help_option = typer.Option(
     show_default=False
 )
 
+profile_option = typer.Option(
+    "default",
+    "--profile",
+    "-p",
+    help="Set the FNGEN profile to use",
+    is_eager=True,
+    expose_value=True,
+    # callback=show_help_callback,
+    show_default=False
+)
+
 
 def print_error(message: str):
     console.print(f"[bold red]ERR:[/] {str(message)}")
