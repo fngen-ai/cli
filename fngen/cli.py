@@ -15,6 +15,8 @@ from fngen.commands.login import login
 
 from fngen.commands.whoami import whoami
 
+from fngen.commands.push import push
+
 app = typer.Typer(add_help_option=False, add_completion=False)
 
 
@@ -32,18 +34,9 @@ app.command(name="login", help="Log in + set up your API key")(login)
 
 app.command(name="whoami", help="Test your API key")(whoami)
 
+app.command(name="push",  help="Push a deployment package")(push)
+
 app.add_typer(project_app, name="project")
-
-
-@app.command(name="push", help="Push a deployment package")
-def push(project_name: str = typer.Argument(..., help="The name of the project"),
-         path_to_package: str = typer.Argument(
-             ..., help="Path to the deployment package (zip, tar.gz, etc.)"),
-         help: bool = help_option):
-    """Placeholder for the push command."""
-    rprint(f"[yellow]Running 'push' command (placeholder)...[/yellow]")
-    rprint(f"  Project Name: [bold]{project_name}[/bold]")
-    rprint(f"  Package Path: [bold]{path_to_package}[/bold]")
 
 
 @app.command(name="version", help="Print fngen version")
