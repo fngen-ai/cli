@@ -9,8 +9,12 @@ import typer.models
 from fngen.cli_util import help_option, print_custom_help
 from fngen.cli_util import profile_option
 
-from fngen.network import GET, POST
+from fngen.network import DELETE, GET, POST
+from rich.table import Table
+from rich import box
 
+
+console = Console()
 
 project_app = typer.Typer(name="project", help="Manage projects (list / create / delete / set_env)",
                           add_help_option=False, add_completion=False)
@@ -30,7 +34,24 @@ def project_main(
 def list_projects(help: bool = help_option, profile: str = profile_option):
     """Lists projects associated with the current user/account."""
     res = GET('/api/projects', profile=profile)
-    print(res)
+    table = Table(
+        title=f"\n[bold cyan]Projects[/bold cyan]",
+        title_justify='left',
+        box=box.ROUNDED,
+        show_header=True,
+        header_style="bold magenta"
+    )
+
+    table.add_column("Name", style="dim", width=20)
+    table.add_column("Status", justify="center")
+    table.add_column("Web Dashboard", style="blue")
+
+    for project in res:
+        slug = project['slug']
+        dashboard_url = f'https://fngen.ai/p/{slug}'
+        table.add_row(project["name"], project['status'], dashboard_url)
+
+    console.print(table)
 
 
 @project_app.command(name="create", help="Create a new project")
@@ -57,8 +78,10 @@ def delete_project(
     profile: str = profile_option
 ):
     """Deletes the specified project."""
-    rprint(f"[red]Running 'project delete' command (placeholder)...[/red]")
-    rprint(f"  Deleting project: [bold]{project_name}[/bold]")
+    res = DELETE('/api/project', {
+        'name': project_name
+    }, profile=profile)
+    print(res)
 
 
 @project_app.command(name="set_env", help="Securely set a .env file for your project")

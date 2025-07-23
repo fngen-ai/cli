@@ -45,3 +45,18 @@ def POST(route: str, body: dict, send_api_key=True, profile=None) -> dict:
         error_msg = json['detail']
         raise ValueError(error_msg)
     return json
+
+
+def DELETE(route: str, body: dict, send_api_key=True, profile=None) -> dict:
+    headers = {}
+    if send_api_key:
+        headers = get_auth_headers(profile=profile)
+    response = requests.delete(f'{SERVICE_ENDPOINT}{route}',
+                               headers=headers,
+                               timeout=TIMEOUT_SECONDS,
+                               data=orjson.dumps(body))
+    json = response.json()
+    if not response.status_code == 200:
+        error_msg = json['detail']
+        raise ValueError(error_msg)
+    return json
