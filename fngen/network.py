@@ -1,6 +1,10 @@
+from contextlib import closing
+from urllib.parse import urlencode
 from fngen.api_key_manager import get_api_key
 import orjson
 import requests
+
+from fngen.shell_util import run_bash
 
 
 SERVICE_ENDPOINT = 'https://fngen.ai'
@@ -60,3 +64,75 @@ def DELETE(route: str, body: dict, send_api_key=True, profile=None) -> dict:
         error_msg = json['detail']
         raise ValueError(error_msg)
     return json
+
+
+def STREAM_SSE(
+    route: str,
+    params: dict = None,
+    send_api_key: bool = True,
+    profile: str = None,
+    stdout_callback: callable = None,
+    stderr_callback: callable = None
+):
+    """
+    Establishes a connection to an SSE stream using curl via the run_bash utility.
+
+    This function blocks and streams output via the provided callbacks.
+    Designed for direct use in a CLI command for streaming logs or events.
+
+    Args:
+        route: The API route for the SSE stream.
+        params: A dictionary of query parameters.
+        send_api_key: Whether to include the authentication header.
+        profile: The fngen profile to use for getting the API key.
+        stdout_callback: A function to call for each line from stdout.
+        stderr_callback: A function to call for each line from stderr.
+
+    Returns:
+        The final (exit_code, full_stdout, full_stderr, runtime_error) tuple
+        from the run_bash command.
+
+    Raises:
+        ValueError: If required arguments are missing or API key is not found.
+        RuntimeError: Propagated from run_bash if the process can't start.
+    """
+    if not stdout_callback:
+        raise ValueError(
+            "A stdout_callback must be provided to process the stream.")
+
+    headers = {}
+    if send_api_key:
+        api_key = get_api_key(profile=profile)
+        if not api_key:
+            raise ValueError("API key not found. Please run 'fngen connect'.")
+        headers['Authorization'] = api_key
+
+    # Build the full URL with query parameters
+    full_url = f"{SERVICE_ENDPOINT}{route}"
+    if params:
+        full_url += f"?{urlencode(params)}"
+
+    # Build the header arguments for curl
+    header_args = ""
+    for key, value in headers.items():
+        header_args += f"-H '{key}: {value}' "
+
+    # Construct the final curl command.
+    # -s: silent (no progress meter)
+    # -N: no buffering (essential for streaming)
+    command = f"curl -s -N {header_args}'{full_url}'"
+
+    # Define a default stderr_callback if none is provided, to avoid None check inside run_bash
+    effective_stderr_callback = stderr_callback or (lambda line: None)
+
+    # Use the run_bash utility to execute the command.
+    # Allow exit code 130 for graceful Ctrl+C exit.
+    exit_code, full_stdout, full_stderr, runtime_error = run_bash(
+        command,
+        shell=True,
+        stdout_callback=stdout_callback,
+        stderr_callback=effective_stderr_callback,
+        expected_exit_codes={0, 130}  # Allow success (0) or Ctrl+C (SIGINT)
+    )
+
+    return exit_code, full_stdout, full_stderr, runtime_error

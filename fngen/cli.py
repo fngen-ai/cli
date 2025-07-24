@@ -17,6 +17,8 @@ from fngen.commands.whoami import whoami
 
 from fngen.commands.push import push
 
+from fngen.commands.logs import logs
+
 app = typer.Typer(add_help_option=False, add_completion=False)
 
 
@@ -35,6 +37,9 @@ app.command(name="login", help="Log in + set up your API key")(login)
 app.command(name="whoami", help="Test your API key")(whoami)
 
 app.command(name="push",  help="Push a deployment package")(push)
+
+app.command(name="logs",  help="Stream logs")(logs)
+
 
 app.add_typer(project_app, name="project")
 
