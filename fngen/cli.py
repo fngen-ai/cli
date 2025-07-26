@@ -15,7 +15,7 @@ from fngen.commands.login import login
 
 from fngen.commands.whoami import whoami
 
-from fngen.commands.push import push, simulate_push
+from fngen.commands.push import push, simulate_push, watch_pipeline
 
 from fngen.commands.logs import logs
 
@@ -37,6 +37,9 @@ app.command(name="login", help="Log in + set up your API key")(login)
 app.command(name="whoami", help="Test your API key")(whoami)
 
 app.command(name="push",  help="Push a deployment package")(push)
+
+app.command(name="watch",  help="Push a deployment package")(watch_pipeline)
+
 
 app.command(name="sim",  help="Push ux sim")(simulate_push)
 

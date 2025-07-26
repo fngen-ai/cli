@@ -20,7 +20,7 @@ def package_source(source_root_path, archive_format: str = 'tar'):
 
     with tempfile.TemporaryDirectory() as temp_dir_str:
         staging_dir = Path(temp_dir_str)
-        print(f"Staging deployment in: {staging_dir}")
+        # print(f"Staging deployment in: {staging_dir}")
 
         copy_directory_with_whitelist(
             source_root_path, staging_dir, package_file_paths)
@@ -30,7 +30,7 @@ def package_source(source_root_path, archive_format: str = 'tar'):
 
         shutil_format = 'gztar' if archive_format == 'tar' else 'zip'
 
-        print(f"Creating '{archive_format}' archive from {staging_dir}...")
+        # print(f"Creating '{archive_format}' archive from {staging_dir}...")
 
         archive_path_str = shutil.make_archive(
             base_name=str(archive_base_name),
@@ -39,7 +39,7 @@ def package_source(source_root_path, archive_format: str = 'tar'):
         )
 
         archive_path = Path(archive_path_str)
-        print(f"Archive created: {archive_path}")
+        # print(f"Archive created: {archive_path}")
 
     return archive_path
 
