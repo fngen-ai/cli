@@ -3,6 +3,7 @@ import os
 import shlex
 import subprocess
 import threading
+import traceback
 from typing import Callable, Optional, Set, Tuple
 
 
@@ -15,27 +16,18 @@ def run_bash(command: str,
              stdout_callback: Optional[Callable[[str], None]] = None,
              stderr_callback: Optional[Callable[[str], None]] = None
              ) -> Tuple[int, str, str, Optional[Exception]]:
-    """
-    Run a shell command and return (exit_code, stdout, stderr, runtime_error).
 
-    - Supports live streaming via stdout_callback and stderr_callback.
-    """
     logger = logging.getLogger(__name__)
     if expected_exit_codes is None:
         expected_exit_codes = {0}
 
-    logger.info(f">>> {command}")
+    logger.debug(f">>> {command}")
 
     cmd = command if shell else shlex.split(command)
 
-    # Prepare environment
-    if include_parent_env:
-        base_env = os.environ.copy()
-        if env:
-            base_env.update(env)
-        run_env = base_env
-    else:
-        run_env = env
+    run_env = os.environ.copy() if include_parent_env else {}
+    if env:
+        run_env.update(env)
 
     stdout = []
     stderr = []
@@ -43,18 +35,16 @@ def run_bash(command: str,
     exit_code = -1
 
     def read_stream(stream, buffer, callback):
-        for line in iter(stream.readline, b''):
-            decoded = line.decode('utf-8', errors='replace')
-            buffer.append(decoded)
+        for line in iter(stream.readline, ''):
+            buffer.append(line)
             if callback:
-                callback(decoded)
+                callback(line)
         stream.close()
 
     def serialize_exception(exception):
         return {
             'type': type(exception).__name__,
             'message': str(exception),
-            # 'args': exception.args,
             'traceback': ''.join(traceback.format_exception(None, exception, exception.__traceback__))
         }
 
@@ -64,9 +54,10 @@ def run_bash(command: str,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             cwd=cwd,
-            env=run_env,
+            env=run_env if run_env else None,
             shell=shell,
             bufsize=1,
+            text=True
         )
 
         stdout_thread = threading.Thread(target=read_stream, args=(
@@ -93,14 +84,12 @@ def run_bash(command: str,
     if runtime_error:
         logger.error(
             f"❌ [runtime error] code:{exit_code} command: {command}\n{serialize_exception(runtime_error)}")
+        raise runtime_error
     elif exit_code in expected_exit_codes:
-        logger.info(f"✅ [success]\n{full_stdout}")
+        logger.debug(f"✅ [success]\n{full_stdout}")
     else:
         logger.error(
             f"❌ [error] code:{exit_code} command: {command}\n{full_stderr}")
-
-    if runtime_error:
-        raise runtime_error
 
     return exit_code, full_stdout, full_stderr, runtime_error
 
