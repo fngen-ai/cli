@@ -38,10 +38,10 @@ app.command(name="whoami", help="Test your API key")(whoami)
 
 app.command(name="push",  help="Push a deployment package")(push)
 
-app.command(name="watch",  help="Push a deployment package")(watch_pipeline)
+# app.command(name="watch",  help="Push a deployment package")(watch_pipeline)
 
 
-app.command(name="sim",  help="Push ux sim")(simulate_push)
+# app.command(name="sim",  help="Push ux sim")(simulate_push)
 
 app.command(name="logs",  help="Stream logs")(logs)
 
