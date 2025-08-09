@@ -33,7 +33,7 @@ def push(project_name: str, source_root_path: str, help: bool = help_option, pro
 
             res = POST('/api/project/create_package',
                        {
-                           'name': project_name,
+                           'project_name': project_name,
                            'archive_type': 'zip'
                        }, profile=profile)
 
@@ -53,6 +53,7 @@ def push(project_name: str, source_root_path: str, help: bool = help_option, pro
             UPLOAD_PRESIGNED_URL(url, fields, archive_path)
 
             res = POST('/api/project/deploy_package', {
+                'project_name': project_name,
                 'package_id': package_id
             }, profile=profile)
 
