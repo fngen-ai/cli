@@ -1,3 +1,4 @@
+from pathlib import Path
 import time
 import typer
 from rich.console import Console
@@ -6,10 +7,11 @@ import sys
 from art import text2art
 import typer.models
 
-from fngen.cli_util import help_option, print_custom_help
+from fngen.api_key_manager import NoAPIKeyError
+from fngen.cli_util import help_option, print_custom_help, print_error
 from fngen.cli_util import profile_option
 
-from fngen.network import DELETE, GET, POST
+from fngen.network import DELETE, GET, POST, UPLOAD_PRESIGNED_URL
 from rich.table import Table
 from rich import box
 
@@ -79,19 +81,29 @@ def delete_project(
 ):
     """Deletes the specified project."""
     res = DELETE('/api/project', {
-        'name': project_name
+        'project_name': project_name
     }, profile=profile)
     print(res)
 
 
 @project_app.command(name="set_env", help="Securely set a .env file for your project")
-def set_env(
-    project_name: str = typer.Argument(..., help="The name of the project"),
-    path_to_env_file: str = typer.Argument(..., help="Path to the .env file"),
-    help: bool = help_option,
-    profile: str = profile_option
-):
-    """Placeholder for the set_env command."""
-    rprint(f"[yellow]Running 'set_env' command (placeholder)...[/yellow]")
-    rprint(f"  Project Name: [bold]{project_name}[/bold]")
-    rprint(f"  Env File Path: [bold]{path_to_env_file}[/bold]")
+def set_env(project_name: str, path_to_env_file: str, help: bool = help_option, profile: str = profile_option):
+    try:
+        if Path(path_to_env_file).suffix != '.env':
+            raise ValueError(f'Your env file should have a .env extension')
+
+        res = POST('/api/project/set_env',
+                   {
+                       'project_name': project_name,
+                   }, profile=profile)
+
+        url = res['presigned_url']
+        fields = res['presigned_fields']
+
+        UPLOAD_PRESIGNED_URL(url, fields, path_to_env_file)
+
+    except NoAPIKeyError:
+        console.print(
+            "No API key found. Please run `fngen login` to set up your API key.")
+    except Exception as e:
+        print_error(e)

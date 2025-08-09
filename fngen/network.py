@@ -1,10 +1,14 @@
 from contextlib import closing
+import logging
 from urllib.parse import urlencode
 from fngen.api_key_manager import get_api_key
 import orjson
 import requests
 
 from fngen.shell_util import run_bash
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 SERVICE_ENDPOINT = 'https://fngen.ai'
@@ -136,3 +140,45 @@ def STREAM_SSE(
     )
 
     return exit_code, full_stdout, full_stderr, runtime_error
+
+
+def UPLOAD_PRESIGNED_URL(url, fields, file_path):
+    max_retries = 3  # Number of retries
+    for attempt in range(max_retries):
+        try:
+            # Open the file to upload
+            with open(file_path, 'rb') as file:
+                logger.debug(f'[start] POST: {url}')
+                response = requests.post(
+                    url,
+                    data=fields,
+                    files={'file': (fields['key'], file)},
+                    allow_redirects=False,  # Disable automatic redirect handling
+                )
+                logger.debug(f'[response] POST: {url} | {response}')
+
+            # Check if a redirect is needed
+            if response.status_code in [301, 302]:
+                redirect_url = response.headers.get('Location')
+                if redirect_url:
+                    logger.debug(f"Redirecting to: {redirect_url}")
+
+                    # Retry the upload at the new endpoint
+                    url = redirect_url
+                    continue
+                else:
+                    raise ValueError(
+                        'Redirect location not provided in response')
+            else:
+                # If no redirect is needed or request is successful, break the loop
+                response.raise_for_status()
+                return response
+
+        except requests.RequestException as e:
+            logger.debug(f"Error during upload: {str(e)}")
+
+            if attempt < max_retries - 1:
+                logger.debug("Retrying...")
+            else:
+                logger.debug("Max retries exceeded")
+                raise  # Re-raise the exception if max retries exceeded
