@@ -242,7 +242,7 @@ def run_push_live_view_for_pipeline(pipeline_id, profile):
         # )
         if False:
             # hack for dynamic call graph building
-            sse_event_stream_generator()
+            get_real_event_stream()
 
         event_stream_provider = partial(
             get_real_event_stream, pipeline_id=pipeline_id, profile=profile)
