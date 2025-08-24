@@ -92,10 +92,8 @@ def set_env(project_name: str, path_to_env_file: str, help: bool = help_option, 
         if Path(path_to_env_file).suffix != '.env':
             raise ValueError(f'Your env file should have a .env extension')
 
-        res = POST('/api/project/set_env',
-                   {
-                       'project_name': project_name,
-                   }, profile=profile)
+        res = POST(f'/api/project/{project_name}/set_env',
+                   {}, profile=profile)
 
         url = res['presigned_url']
         fields = res['presigned_fields']

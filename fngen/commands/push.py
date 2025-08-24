@@ -34,7 +34,7 @@ def push(project_name: str, source_root_path: str, help: bool = help_option, pro
             res = POST('/api/project/create_package',
                        {
                            'project_name': project_name,
-                           'archive_type': 'zip'
+                           'format_type': 'zip'
                        }, profile=profile)
 
             # console.print(f"{res}")
@@ -46,14 +46,14 @@ def push(project_name: str, source_root_path: str, help: bool = help_option, pro
             # print(f'package_id: {package_id}')
 
             archive_path = packaging.package_source(
-                source_root_path, archive_format='zip')
+                source_root_path, format_type='zip')
 
             # print(f'archive_path: {archive_path}')
 
             UPLOAD_PRESIGNED_URL(url, fields, archive_path)
 
-            res = POST('/api/project/deploy_package', {
-                'project_name': project_name,
+            res = POST('/api/push', {
+                'project_key': project_name,
                 'package_id': package_id
             }, profile=profile)
 

@@ -10,10 +10,10 @@ from pathspec.patterns import GitWildMatchPattern
 from typing import List
 
 
-def package_source(source_root_path, archive_format: str = 'tar'):
-    if archive_format not in ['tar', 'zip']:
+def package_source(source_root_path, format_type: str = 'tar'):
+    if format_type not in ['tar', 'zip']:
         raise ValueError(
-            f"Unsupported archive format: '{archive_format}'. Must be 'tar' or 'zip'.")
+            f"Unsupported archive format: '{format_type}'. Must be 'tar' or 'zip'.")
 
     _, _, _, package_file_paths = get_packaged_files(
         source_root_path=source_root_path)
@@ -28,9 +28,9 @@ def package_source(source_root_path, archive_format: str = 'tar'):
         archive_base_name = Path(tempfile.gettempdir()) / \
             f"fngen_deployment_{os.urandom(8).hex()}"
 
-        shutil_format = 'gztar' if archive_format == 'tar' else 'zip'
+        shutil_format = 'gztar' if format_type == 'tar' else 'zip'
 
-        # print(f"Creating '{archive_format}' archive from {staging_dir}...")
+        # print(f"Creating '{format_type}' archive from {staging_dir}...")
 
         archive_path_str = shutil.make_archive(
             base_name=str(archive_base_name),
