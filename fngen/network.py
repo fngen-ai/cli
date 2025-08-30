@@ -1,5 +1,6 @@
 from contextlib import closing
 import logging
+import os
 from urllib.parse import urlencode
 from fngen.api_key_manager import get_api_key
 import orjson
@@ -11,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-SERVICE_ENDPOINT = 'https://fngen.ai'
+SERVICE_ENDPOINT = os.getenv("FNGEN_SERVICE_ENDPOINT", 'https://fngen.ai')
 TIMEOUT_SECONDS = 3 * 60
 
 
