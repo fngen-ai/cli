@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fngen"
-version = "0.9.10"
+version = "0.9.11"
 description = "Give your Python functions superpowers"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -25,7 +25,9 @@ dependencies = [
     "orjson>=3.10,<4",
     "requests>=2.25,<3.0",
     "pathspec>=0.12.1",
+    "pydantic>=2.0,<3.0",
 ]
+
 
 [project.scripts]
 fngen = "fngen.cli:app"
