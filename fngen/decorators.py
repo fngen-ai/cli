@@ -3,7 +3,7 @@ from typing import Literal
 from fngen.resources import Fleet
 
 
-def webapp(framework=Literal['fastapi', 'flask', 'django'],
+def webapp(framework: Literal['fastapi', 'flask', 'django'],
            fleet: Fleet | None = None):
     """
     Define a webapp

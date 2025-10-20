@@ -11,7 +11,7 @@ from fngen.api_key_manager import NoAPIKeyError
 from fngen.cli_util import help_option, print_custom_help, print_error
 from fngen.cli_util import profile_option
 
-from fngen.network import DELETE, GET, POST, UPLOAD_PRESIGNED_URL
+from fngen.network import DELETE, GET, POST, SERVICE_ENDPOINT, UPLOAD_PRESIGNED_URL
 from rich.table import Table
 from rich import box
 
@@ -50,7 +50,7 @@ def list_projects(help: bool = help_option, profile: str = profile_option):
 
     for project in res:
         slug = project['slug']
-        dashboard_url = f'https://fngen.ai/p/{slug}'
+        dashboard_url = f'{SERVICE_ENDPOINT}/p/{slug}'
         table.add_row(project["name"], project['status'], dashboard_url)
 
     console.print(table)
