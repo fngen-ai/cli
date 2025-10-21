@@ -1,5 +1,6 @@
 from fngen.commands.project import project_app
 import time
+from fngen.network import SERVICE_ENDPOINT
 import typer
 from rich.console import Console
 from rich import print as rprint
@@ -9,7 +10,7 @@ import typer.models
 from importlib.metadata import version, PackageNotFoundError
 
 from fngen.api_key_manager import NoAPIKeyError, get_api_key
-from fngen.cli_util import help_option, print_custom_help
+from fngen.cli_util import get_cli_version, help_option, print_custom_help
 
 from fngen.commands.login import login
 
@@ -52,15 +53,7 @@ app.add_typer(project_app, name="project")
 @app.command(name="version", help="Print fngen version")
 def _version(help: bool = help_option):
     """Prints the package version."""
-    try:
-        try:
-            __version__ = version("fngen")
-        except PackageNotFoundError:
-            __version__ = "unknown (package not installed)"
-    except ImportError:
-        __version__ = "unknown (importlib.metadata not available)"
-
-    rprint(f"[bold]fngen[/bold] version: [yellow]{__version__}[/yellow]")
+    rprint(f"CLI Version: [yellow]{get_cli_version()}[/yellow]")
 
 
 if __name__ == "__main__":

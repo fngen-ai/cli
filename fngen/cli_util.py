@@ -1,3 +1,5 @@
+from importlib.metadata import PackageNotFoundError, version
+from fngen.network import SERVICE_ENDPOINT
 import typer
 from rich.console import Console
 from rich import print as rprint
@@ -7,12 +9,26 @@ import typer.models
 console = Console()
 
 
+def get_cli_version():
+    try:
+        try:
+            __version__ = version("fngen")
+        except PackageNotFoundError:
+            __version__ = "unknown (package not installed)"
+    except ImportError:
+        __version__ = "unknown (importlib.metadata not available)"
+    return __version__
+
+
 def print_custom_help(ctx: typer.Context):
     try:
         art_text = text2art('fngen', font='Rammstein')
         rprint(f"[bold blue]{art_text}[/bold blue]")
     except Exception:
         rprint("[bold blue]fngen[/bold blue]")
+
+    rprint(f"CLI Version: [yellow]{get_cli_version()}[/yellow]")
+    rprint(f"Service URL: [yellow]{SERVICE_ENDPOINT}[/yellow]")
 
     console.print(ctx.get_help())
 
