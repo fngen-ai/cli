@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fngen"
-version = "0.9.14"
+version = "0.9.15"
 description = "Give your Python functions superpowers"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -32,9 +32,9 @@ dependencies = [
 [project.scripts]
 fngen = "fngen.cli:app"
 
-# [project.urls]
-# "Homepage" = "https://github.com/connormcl/fngen"
-# "Bug Tracker" = "https://github.com/connormcl/fngen/issues"
+[project.urls]
+"Homepage" = "https://github.com/fngen-ai/cli"
+"Bug Tracker" = "https://github.com/fngen-ai/cli/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
