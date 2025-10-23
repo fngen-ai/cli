@@ -16,6 +16,9 @@ class Sandbox(NamedTuple):
     run: Callable[[str], CLIResult]
 
 
+ACCEPTANCE_TEST_SERVICE_URL = 'https://staging.fngen.ai'
+
+
 @pytest.fixture(scope="function")
 def e2e_sandbox(tmp_path: Path) -> Sandbox:
     sandbox_path = tmp_path
@@ -26,7 +29,7 @@ def e2e_sandbox(tmp_path: Path) -> Sandbox:
     def run_bash_sandbox(command: str) -> CLIResult:
         run_env = os.environ.copy()
         run_env["PATH"] = f"{venv_path / 'bin'}:{os.environ.get('PATH')}"
-        run_env["FNGEN_SERVICE_ENDPOINT"] = "https://staging.fngen.ai"
+        run_env["FNGEN_SERVICE_ENDPOINT"] = ACCEPTANCE_TEST_SERVICE_URL
 
         def stream_stdout(line):
             print(f"[sandbox stdout] {line.strip()}")
