@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from typing import Callable, NamedTuple, Optional
+from uuid import uuid4
 from fngen.shell_util import run_bash
 import pytest
 
@@ -20,7 +21,7 @@ ACCEPTANCE_TEST_SERVICE_URL = 'https://staging.fngen.ai'
 
 
 @pytest.fixture(scope="function")
-def e2e_sandbox(tmp_path: Path) -> Sandbox:
+def sandbox(tmp_path: Path) -> Sandbox:
     sandbox_path = tmp_path
     venv_path = sandbox_path / ".venv"
     
@@ -58,3 +59,22 @@ def e2e_sandbox(tmp_path: Path) -> Sandbox:
     yield Sandbox(path=sandbox_path, run=run_bash_sandbox)
 
     print(f"\n--- Fixture TEARDOWN: Sandbox '{sandbox_path}' will be auto-cleaned. ---")
+
+
+
+@pytest.fixture(scope="function")
+def project_up_down(sandbox: Sandbox):
+    sandbox = sandbox
+
+    rando = str(uuid4())[:8]
+    proj_name = f'e2e_project_{rando}'
+
+    print(f"\n--- Fixture SETUP: Creating project '{proj_name}' ---")
+
+    o = sandbox.run(f'fngen project create {proj_name} --profile=e2e')
+
+    yield proj_name
+
+    print(f"\n--- Fixture TEARDOWN: Deleting project '{proj_name}' ---")
+
+    o = sandbox.run(f'fngen project delete {proj_name} --profile=e2e')
