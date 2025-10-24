@@ -1,7 +1,7 @@
 import pytest
 from fngen.cli_util import get_cli_version
 from fngen.data.asset_manager import copy_example_package
-from tests.fixtures import ACCEPTANCE_TEST_SERVICE_URL, Sandbox, sandbox, project_up_down
+from fngen.data.fixtures import ACCEPTANCE_TEST_SERVICE_URL, Sandbox, sandbox, project_up_down
 
 
 def test_sandbox(sandbox: Sandbox):
