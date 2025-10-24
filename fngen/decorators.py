@@ -1,12 +1,12 @@
 from typing import Literal
-
 from fngen.resources import Fleet
 
 
-def webapp(framework: Literal['fastapi', 'flask', 'django'],
+def webapp(hostname: str,
+           framework: Literal['fastapi', 'flask', 'django'],
            fleet: Fleet | None = None):
     """
-    Define a webapp
+    Mark a function for deployment as a webapp on FNGEN
     """
     def g(f):
         # intentionally do nothing :)
