@@ -20,6 +20,24 @@ class Sandbox(NamedTuple):
 ACCEPTANCE_TEST_SERVICE_URL = 'https://staging.fngen.ai'
 
 
+def in_source_checkout() -> bool:
+    here = Path(__file__).resolve()
+
+    if "site-packages" in here.parts or "dist-packages" in here.parts:
+        return False
+
+    return any((p / "pyproject.toml").exists() for p in here.parents)
+
+
+
+def find_project_root() -> Path:
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "pyproject.toml").exists():
+            return parent
+    raise RuntimeError("Cannot locate project root")
+
+
 @pytest.fixture(scope="function")
 def sandbox(tmp_path: Path) -> Sandbox:
     sandbox_path = tmp_path
@@ -50,10 +68,13 @@ def sandbox(tmp_path: Path) -> Sandbox:
         return CLIResult(exit_code, stdout, stderr, runtime_error)
 
     run_bash_sandbox(f"python -m venv {venv_path}")
-    project_root = Path(__file__).parent.parent
-    install_cmd = (
-        f"{venv_path / 'bin' / 'pip'} install -e '{project_root}[test]'"
-    )
+
+    if in_source_checkout():
+        project_root = find_project_root()
+        install_cmd = f"{venv_path / 'bin' / 'pip'} install -e '{project_root}[test]'"
+    else:
+        install_cmd = f"{venv_path / 'bin' / 'pip'} install fngen[test]"
+
     run_bash_sandbox(install_cmd)
 
     yield Sandbox(path=sandbox_path, run=run_bash_sandbox)
@@ -78,3 +99,4 @@ def project_up_down(sandbox: Sandbox):
     print(f"\n--- Fixture TEARDOWN: Deleting project '{proj_name}' ---")
 
     o = sandbox.run(f'fngen project delete {proj_name} --profile=e2e')
+
